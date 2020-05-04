@@ -114,8 +114,9 @@ class MainWindow(qtw.QMainWindow):
         algoritCat1 = qtw.QMenu('Búsquedas ciegas', self)
 
         anchuraAct = qtw.QAction(qtg.QIcon('code-icon.png'), '&Anchura', self)
-        anchuraAct.triggered.connect(self.bdfInit)
+        anchuraAct.triggered.connect(self.bfsInit)
         profundidadAct = qtw.QAction(qtg.QIcon('code-icon.png'), '&Profundidad', self)
+        profundidadAct.triggered.connect(self.bCiegaProfInit)
 
         algoritCat1.addAction(anchuraAct)
         algoritCat1.addAction(profundidadAct)
@@ -130,7 +131,6 @@ class MainWindow(qtw.QMainWindow):
         algoritCat3 = qtw.QMenu('Búsquedas optimizadas', self)
 
         costoUniformAct = qtw.QAction(qtg.QIcon('code-icon.png'), '&Costo uniforme', self)
-        # os.system('python ucs/ucs.py')
         costoUniformAct.triggered.connect(self.run)
 
         AestrellaAct = qtw.QAction(qtg.QIcon('code-icon.png'), '&A*', self)
@@ -160,6 +160,11 @@ class MainWindow(qtw.QMainWindow):
         labelLogo = qtw.QLabel(self)
         logoPixmap = qtg.QPixmap('arlogo.png')
 
+        # self.painter = qtg.QPainter(logoPixmap)
+        # qPoint = qtc.QPoint(100, 100)
+        # self.painter.setFont(qtg.QFont("consolas", 10))
+        # self.painter.drawText(logoPixmap.rect(), Qt.AlignCenter, "hellodddddddddddddddddddddddddddddddddd")
+
         # University logo as centered widget
         labelLogo.setPixmap(logoPixmap)
         self.setCentralWidget(labelLogo)
@@ -168,6 +173,7 @@ class MainWindow(qtw.QMainWindow):
         self.setWindowTitle('Algoritmos IA')    
         self.show()
 
+    # 
     def bfs(self, graph, initial):
         visited = []
         
@@ -184,7 +190,8 @@ class MainWindow(qtw.QMainWindow):
                     queue.append(neighbour)
         return visited
 
-    def bdfInit(self):
+    # Busqueda a ciegas - Anchura
+    def bfsInit(self):
         graph = {'A': ['B', 'C', 'E'],
                 'B': ['A','D', 'E'],
                 'C': ['A', 'F', 'G'],
@@ -195,7 +202,73 @@ class MainWindow(qtw.QMainWindow):
 
         print(self.bfs(graph, 'A'))
     
+
+    ## Busqueda a ciegas - profundidad
+
+    def bCiegaProfInit(self):
+        self.valores = {
+            "b":"a",
+            "c":"a",
+            "d":"a",
+            "e":"b",
+            "f":"b",
+            "h":"c",
+            "i":"d",
+            "j":"d",
+            "k":"e",
+            "m":"f",
+            "g":"h",
+            "l":"j",
+            "n":"m",
+            "o":"m"
+        }
+
+        self.camino = []
+
+        result = self.buscar("a", "o")
+        print("### ALGORITMO DE BUSQUE A CIEGAS EN PROFUNDIDAD ###")
+        if result:
+            print(self.camino)
+        else:
+            print("Camino no encontrado")
+
+    def buscar(self, inicio,valorBuscar):
+        """
+        Funcion recursiva para buscar en profundidad
+        Tiene que recibir:
+            - el valor inicial donde empezar a buscar
+            - el valor a buscar en su estructura
+        Devuelve el valor a buscar o 0 si no lo encuentra
+        """
+        self.camino.append(inicio)
+    
+        # si encontramos el elemento, lo devolvemos
+        if inicio==valorBuscar:
+            return valorBuscar
+    
+        # recorremos todos los elementos en busca del valor de inicio
+        for k,v in self.valores.items():
+    
+            # si el valor del elemento tiene como padre al valor de inicio
+            if v==inicio:
+    
+                # llamamos a la función recursivamente enviando el nuevo padre
+                result = self.buscar(k,valorBuscar)
+    
+                # si hemos recibido algun resultado es que hemos encontrado el
+                # elemento que buscamos
+                if result:
+                    return result
+    
+        self.camino.pop()
+    
+        # si llegamos aqui, es que hemos llegado al final de una profundidad
+        return 0
+
+
     def astar(self):
+
+        print("### ALGORITMO A* ###")
 
         maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
